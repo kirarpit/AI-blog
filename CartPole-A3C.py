@@ -194,6 +194,12 @@ class Agent:
 		self.R = ( self.R + r * GAMMA_N ) / GAMMA
 
 		if s_ is None:
+                        if len(self.memory) < N_STEP_RETURN:    # possible edge case - if an episode ends in <N steps
+                            cnt = N_STEP_RETURN - len(self.memory)
+                            while cnt:
+                                self.R /= GAMMA
+                                cnt -= 1
+
 			while len(self.memory) > 0:
 				n = len(self.memory)
 				s, a, r, s_ = get_sample(self.memory, n)
@@ -210,8 +216,6 @@ class Agent:
 
 			self.R = self.R - self.memory[0][2]
 			self.memory.pop(0)	
-	
-	# possible edge case - if an episode ends in <N steps, the computation is incorrect
 		
 #---------
 class Environment(threading.Thread):
